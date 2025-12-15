@@ -1,0 +1,507 @@
+{
+	"info": {
+		"_postman_id": "e9202f6d-90b1-4ff1-8c62-87f1c0ac3d23",
+		"name": "Case 2 v2.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26188800",
+		"_collection_link": "https://teste1-3334.postman.co/workspace/Curso_Minsait~093245ec-6cc8-444a-89b3-98b9e7fcc9a3/collection/26188800-e9202f6d-90b1-4ff1-8c62-87f1c0ac3d23?action=share&source=collection_link&creator=26188800"
+	},
+	"item": [
+		{
+			"name": "Retorna status API",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}/status",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registrar cliente na API",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 1. Converte a resposta (que é um texto JSON) em um objeto JavaScript.\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// 2. Extrai o valor da chave \"accessToken\" de dentro do objeto da resposta.\r",
+							"const accessToken = responseData.accessToken;\r",
+							"\r",
+							"// 3. Salva o valor extraído em uma variável de ambiente chamada \"accessToken\".\r",
+							"//    Isso permite que outras requisições possam usar este token.\r",
+							"if (accessToken) {\r",
+							"    pm.environment.set(\"accessToken\", accessToken);\r",
+							"    console.log(\"Token de Acesso foi salvo com sucesso!\");\r",
+							"}\r",
+							"\r",
+							"// (Opcional, mas uma boa prática) Adiciona um teste para verificar se o status da resposta foi 201.\r",
+							"pm.test(\"Status code da resposta é 201 (Created)\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"clientName\": \"{{$randomLastName}}\",\r\n  \"clientEmail\": \"teste.{{$randomWord}}{{$randomInt}}@qa.com.br\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}/api-clients/",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"api-clients",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retornar uma lista de livros",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status da resposta é 200 (OK)\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Pega a resposta JSON\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// Verifica se a resposta é uma lista com pelo menos um livro\r",
+							"if (responseData && responseData.length > 0) {\r",
+							"    // Pega o ID do primeiro livro da lista\r",
+							"    const primeiroLivroId = responseData[0].id;\r",
+							"    \r",
+							"    // Salva o ID na variável de ambiente\r",
+							"    pm.environment.set(\"bookId\", primeiroLivroId);\r",
+							"    \r",
+							"    console.log(\"ID do primeiro livro foi salvo no ambiente:\", primeiroLivroId);\r",
+							"} else {\r",
+							"    console.error(\"Erro: A resposta não contém uma lista de livros.\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}/books",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"books"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "fiction",
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar um livro - ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}/books/{{bookId}}",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"books",
+						"{{bookId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar todos os pedidos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{urlBase}}/orders",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Enviar um novo pedido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status da resposta é 201 (Created)\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// ESTA PARTE É A MAIS IMPORTANTE\r",
+							"if (responseData.orderId) {\r",
+							"    pm.environment.set(\"orderId\", responseData.orderId);\r",
+							"    console.log(\"ID do Pedido salvo no ambiente:\", responseData.orderId);\r",
+							"} else {\r",
+							"    console.error(\"Erro: ID do Pedido não foi encontrado na resposta.\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"bookId\": {{bookId}},\r\n  \"customerName\": \"Cliente {{$randomFullName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}/orders",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar pedido criado",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status da resposta é 200 (OK)\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Check if response is valid JSON before parsing",
+							"let responseData;",
+							"let isValidJson = false;",
+							"",
+							"try {",
+							"    responseData = pm.response.json();",
+							"    isValidJson = true;",
+							"} catch (e) {",
+							"    // JSON parsing failed",
+							"    isValidJson = false;",
+							"}",
+							"",
+							"pm.test(\"A resposta está no formato JSON válido\", () => {",
+							"    if (!isValidJson) {",
+							"        const contentType = pm.response.headers.get(\"Content-Type\") || \"unknown\";",
+							"        pm.expect.fail(`A resposta não é um JSON válido. Content-Type: ${contentType}. Verifique se a URL e os parâmetros da requisição estão corretos.`);",
+							"    }",
+							"    pm.expect(isValidJson).to.be.true;",
+							"});",
+							"",
+							"if (isValidJson) {",
+							"    pm.test(\"O pedido retornado é o correto\", () => {",
+							"        pm.expect(responseData.id).to.eql(pm.environment.get(\"orderId\"));",
+							"        pm.expect(responseData.bookId).to.eql(parseInt(pm.environment.get(\"bookId\")));",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"content-length": true,
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}/orders/{{orderId}}",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"orders",
+						"{{orderId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar um pedido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Valida se o status da resposta é 204\r",
+							"pm.test(\"Status da resposta é 204 (No Content)\", () => {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"// CORREÇÃO: Valida se a resposta NÃO TEM corpo ou se o corpo é vazio.\r",
+							"pm.test(\"A resposta não deve ter corpo (body)\", () => {\r",
+							"    pm.expect(pm.response.text()).to.be.empty;\r",
+							"});\r",
+							"\r",
+							"console.log(\"Pedido \" + pm.environment.get(\"orderId\") + \" atualizado com sucesso.\");"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Gera um nome aleatório e salva no ambiente\r",
+							"const novoNome = pm.variables.replaceIn(\"{{$randomFullName}}\");\r",
+							"pm.environment.set(\"novoCustomerName\", novoNome);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"customerName\": \"{{novoCustomerName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}/orders/{{orderId}}",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"orders",
+						"{{orderId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Excluir um pedido existente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status da resposta é 204 (No Content)\", () => {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"console.log(\"Pedido \" + pm.environment.get(\"orderId\") + \" excluído com sucesso.\");"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"customerName\": \"Camila\"\r\n}"
+				},
+				"url": {
+					"raw": "{{urlBase}}/orders/{{orderId}}",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"orders",
+						"{{orderId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "urlBase",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		}
+	]
+}
